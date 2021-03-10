@@ -1,0 +1,23 @@
+*,
+*::after,
+*::before {
+	margin: 0;
+	padding: 0;
+	box-sizing: inherit;
+}
+
+html {
+	/* setting fontSize to 10px; */
+	font-size: 62.5%;
+}
+
+body {
+	box-sizing: border-box;
+}
+
+.content__center {
+	width: 50%;
+	margin: 0 auto;
+	font-size: 2rem;
+	background-color: aqua;
+}
