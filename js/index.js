@@ -1,5 +1,29 @@
 const API_KEY = "381d904bb5f8891c68c8a3c817e855ce";
 
+const days = [
+	"Monday",
+	"Tuesday",
+	"Wednesday",
+	"Thursday",
+	"Friday",
+	"Saturday",
+	"Sunday",
+];
+
+const months = [
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December",
+];
 // use class to build the app
 // getLocation()
 //getcurrentLocation weather details
@@ -7,73 +31,26 @@ const API_KEY = "381d904bb5f8891c68c8a3c817e855ce";
 const KelvinToCelcius = tempInKelv => (tempInKelv - 273).toFixed(1);
 
 const MainContent = document.querySelector(".content__center");
-const CurLocationOverview = document.querySelector(".cur__location-overview");
+const MainView = document.querySelector(".main");
+const CurForeCastView = document.querySelector(".cur__Forecast--overview");
 const detailedForeCastViewContainer = document.querySelector(
 	".detailed__forecast-view"
 );
-const spinner = document.querySelector(".spinner");
 
-class App {
-	constructor() {
-		this.getLocation();
-	}
-	getLocation() {
-		if (!navigator.geolocation) alert("geolocation not available");
-		navigator.geolocation.getCurrentPosition(
-			success => {
-				this.getWeatherDetails(success.coords);
-				console.log(success);
-			},
-			err => console.log(err)
-		);
-	}
-	getWeatherDetails(coords) {
-		console.log(coords);
-		fetch(
-			` https://api.openweathermap.org/data/2.5/weather?lat=${coords.latitude}&lon=${coords.longitude}&appid=983fe9217aa2f17f99c9d6dd7d01dd07`
-		)
-			.then(res => res.json())
-			.then(weatherData => this.renderCurrentLocationDetail(weatherData))
-			.catch(err => console.log(err));
-	}
-	renderCurrentLocationDetail(curData) {
-		if (curData) spinner.style.display = "none";
+const EventView = document.querySelector(".event__view");
+const EventTitle = document.querySelector(".event__title");
+const EventDesc = document.querySelector(".event__desc");
+const EventIcon = document.querySelector(".event__icon");
 
-		const {
-			id,
-			dt,
-			name,
-			main: { feels_like, humidity, temp, temp_max, temp_min },
-			sys: { country },
-			weather: [{ description, main, icon }],
-		} = curData;
+const close = document.querySelector(".close");
 
-		console.log(id);
-		let html = ` <div class="cur__location-detail" data-id=${id}>
-        <h2 class="cur__detail-name">${name},${country}</h2>
-        <div class="cur__detail-icon">
-            <img class="icon" src="./sun.svg" alt="icon"/>
-            <span class="cur__detail-temp">${KelvinToCelcius(temp)}C</span>
-        </div>
-        <p class="description cur-description">${main}</p>
-        <p class="cur__maxmin--temp">${KelvinToCelcius(
-					temp_min
-				)}C.${KelvinToCelcius(temp_max)}C</p>
-    </div> `;
+const spinner = `<div class="lds-ripple spinner">
+					<div></div>
+					<div></div>
+				 </div>
+`;
 
-		CurLocationCard.insertAdjacentHTML("afterbegin", html);
-	}
-
-	getWeatherDetailsForNext5Days(id) {
-		fetch(
-			`pro.openweathermap.org/data/2.5/forecast/hourly?id=${id}&appid=983fe9217aa2f17f99c9d6dd7d01dd07`
-		)
-			.then(res => res.json())
-			.then(data => console.log(data));
-	}
-}
-
-// const app = new App();
+const setEventIcon = pin => (pin ? "/pin.svg" : "/map.svg");
 
 function getLocation() {
 	if (!navigator.geolocation) alert("geolocation not available");
@@ -86,21 +63,15 @@ function getLocation() {
 }
 
 function fetchCurrentForecastData(coords) {
-	// let spinner = `<div class="lds-ripple spinner">
-	// 			<div></div>
-	// 			<div></div>
-	// 			 </div>`;
-
 	fetch(
 		` https://api.openweathermap.org/data/2.5/weather?lat=${coords.latitude}&lon=${coords.longitude}&appid=983fe9217aa2f17f99c9d6dd7d01dd07`
 	)
 		.then(res => res.json())
-		.then(data => renderCurLocationForeCast(data))
+		.then(data => renderCurForeCast(data))
 		.catch(err => console.log(err));
 }
 
-function renderCurLocationForeCast(data) {
-	console.log(data);
+function renderCurForeCast(data) {
 	const {
 		id,
 		dt,
@@ -111,58 +82,128 @@ function renderCurLocationForeCast(data) {
 		weather: [{ description, main, icon }],
 	} = data;
 
-	let html = `    <h2 class="cur__detail-name">${name},${country}</h2>
+	let html = ` 
+	         
+	              <h2 class="cur__detail-name">${name},${country}</h2>
 					<div class="cur__detail-icon">
 						<img class="icon" src="./sun.svg" alt="icon"/>
-						<span class="cur__detail-temp">${KelvinToCelcius(temp)}C</span>
+						<span class="cur__detail-temp">${KelvinToCelcius(temp)} 
+						°C
+						</span>
 					</div>
-					<p class="description cur-description">${main}</p>
-					<p class="cur__maxmin--temp">${KelvinToCelcius(temp_min)}C.${KelvinToCelcius(
-		temp_max
-	)}C</p>`;
+					<span class="description cur-description">${main}</span>
+					<span class="cur__maxmin--temp">${KelvinToCelcius(
+						temp_min
+					)}°C.${KelvinToCelcius(temp_max)}°C</span>
+			 
+	`;
 
-	CurLocationOverview.dataset.date = dt;
-	CurLocationOverview.dataset.lat = coord.lat;
-	CurLocationOverview.dataset.lon = coord.lon;
+	CurForeCastView.innerHTML = "";
+	CurForeCastView.dataset.date = dt;
+	CurForeCastView.dataset.lat = coord.lat;
+	CurForeCastView.dataset.lon = coord.lon;
+	CurForeCastView.dataset.place = name;
 
-	CurLocationOverview.insertAdjacentHTML("afterbegin", html);
+	CurForeCastView.insertAdjacentHTML("afterbegin", html);
 }
 
-function getDetailedForecastData(lat, lon, dt) {
+function getDetailedForecastData(lat, lon, dt, place) {
 	fetch(
 		`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&dt=${dt}&appid=983fe9217aa2f17f99c9d6dd7d01dd07`
 	)
 		.then(res => res.json())
-		.then(data => renderDetailedForecastView(data))
+		.then(data => renderDetailedForecastView({ place, ...data }))
 		.catch(err => console.log(err));
 }
 
 function renderDetailedForecastView(data) {
-	const { current, daily } = data;
-	CurLocationOverview.classList.add("hidden");
-	detailedForeCastViewContainer.classList.remove("hidden");
-	daily.forEach(el => {
-		let html = ` <div>${KelvinToCelcius(el.temp.day)}</div>`;
+	console.log(data);
+	const { place, current, daily, hourly } = data;
 
-		detailedForeCastViewContainer.insertAdjacentHTML("afterbegin", html);
+	EventTitle.textContent = place;
+	EventIcon.src = setEventIcon(true);
+	let curHtml = `
+			<div class="cur__Forecast--view ">
+				<h2 class="cur__detail-name">Current Weather</h2>
+				<div class="cur__detail-icon">
+					<img class="icon" src="./sun.svg" alt="icon"/>
+					<span class="cur__detail-temp">${KelvinToCelcius(current.temp)}°C</span>
+				</div>
+				<p class="description cur-description">${current.weather[0].main}</p>
+				<span class="maxmin--temp">${KelvinToCelcius(current.temp)}°C.${KelvinToCelcius(
+		current.temp
+	)}°C</span>
+			</div>`;
+
+	const detailedForecastList = document.createElement("div");
+
+	close.classList.add("fadeIn");
+	close.classList.add("close__icon--show");
+
+	detailedForeCastViewContainer.innerHTML = "";
+	detailedForeCastViewContainer.insertAdjacentHTML("afterbegin", curHtml);
+
+	daily.forEach(el => {
+		const {
+			dt,
+			temp: { max, min, day },
+			weather: [{ main: desc }],
+		} = el;
+
+		let date = new Date();
+		let curDate = date.getDate();
+		let curDay = days[date.getDay()];
+		let curMonth = months[date.getMonth()];
+
+		let html = ` <div class="detail__card shadow-light">
+		               <span class="detail__card--dateAndTime">${curDay},${curDate} ${curMonth}</span>
+		                 <div class="detail__card--specs"> 
+						     <div class="detail__specs--left">
+							   <img src='/sun.svg' class='detail__card--icon' />
+							   <div class="detail__descContainer">
+							   <span class="description">${desc}</span>
+							   <span class="maxmin--temp">${KelvinToCelcius(min)}.${KelvinToCelcius(
+			max
+		)}</span>  
+							   </div>
+							 </div>
+						     <div class="detail__specs--right temp">
+							   ${KelvinToCelcius(day)}°C
+							 </div>
+						 </div> 
+		            </div>`;
+
+		detailedForeCastViewContainer.appendChild(detailedForecastList);
+
+		detailedForecastList.insertAdjacentHTML("afterbegin", html);
 	});
 }
 
-CurLocationOverview.addEventListener("click", e => {
-	const el = e.target.closest(".cur__location-overview");
+CurForeCastView.addEventListener("click", e => {
+	const el = e.target.closest(".cur__Forecast--overview");
 
-	const { date, lat, lon } = el.dataset;
-	getDetailedForecastData(lat, lon, date);
-	el.style.display = "none";
-	// el.classList.add("hidden");
+	const { date, lat, lon, place } = el.dataset;
 
-	// setTimeout(() => {
-	// 	el.style.display = "none";
-	// }, 1000);
+	getDetailedForecastData(lat, lon, date, place);
+	CurForeCastView.style.display = "none";
+
+	EventView.classList.remove("hide");
+	detailedForeCastViewContainer.classList.add("fadeIn");
+});
+
+close.addEventListener("click", () => {
+	EventView.classList.add("hide");
+	detailedForeCastViewContainer.classList.remove("fadeIn");
+	// detailedForeCastViewContainer.classList.add(".fadeOut");
+
+	CurForeCastView.style.display = "flex";
+	close.classList.remove("close__icon--show");
+	init();
 });
 
 function init() {
 	getLocation();
+	CurForeCastView.innerHTML = spinner;
 }
 
 init();
