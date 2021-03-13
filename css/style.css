@@ -1,9 +1,11 @@
 :root {
 	--shadow-light: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 	--shadow-light-hover: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+	--shadow-dark: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 	--border-rounded-sm: 0.5rem;
 	--color-primary: #2b7a78;
 	--color-primary-light: #3aafa9;
+	--minHeight: 25rem;
 }
 
 *,
@@ -44,7 +46,7 @@ body {
 	transition: opacity 0.5s;
 	opacity: 0;
 	visibility: none;
-	display: none;
+
 	-webkit-transition: opacity 0.5s;
 	-moz-transition: opacity 0.5s;
 	-ms-transition: opacity 0.5s;
@@ -62,16 +64,17 @@ body {
 	background-size: cover;
 	width: 2.5rem;
 	height: 2.5rem;
-	/* margin-left: auto; */
 	cursor: pointer;
-	opacity: 0;
+	/*opacity: 0;
 	visibility: none;
-	/* display: none; */
+	*/
+	animation: fadeIn 1s linear 0.2s;
+	animation-iteration-count: infinite;
+	-webkit-animation: fadeIn 1s linear 0.2s;
 }
 
 .close__icon--show {
-	opacity: 1;
-	visibility: visible;
+	/* display: block; */
 }
 
 .temp {
@@ -86,7 +89,7 @@ body {
 	border-radius: var(--border-rounded-sm);
 	box-shadow: var(--shadow-light);
 	padding: 2rem 4rem;
-	min-height: 20rem;
+	min-height: var(--minHeight);
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -129,29 +132,6 @@ body {
 	color: rgb(134, 134, 134);
 	font-size: 1.5rem;
 	margin-top: 0.6rem;
-}
-
-.cur__Forecast--view {
-	box-shadow: var(--shadow-light);
-	margin: 3rem 0;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding: 2rem;
-}
-
-.cur__Forecast--view:hover {
-	transition: transform 0.3s ease-in-out;
-	transform: translateY(-0.4rem);
-	box-shadow: var(--shadow-light-hover);
-	-webkit-transform: translateY(-0.4rem);
-	-moz-transform: translateY(-0.4rem);
-	-ms-transform: translateY(-0.4rem);
-	-o-transform: translateY(-0.4rem);
-	-webkit-transition: transform 0.3s ease-in-out;
-	-moz-transition: transform 0.3s ease-in-out;
-	-ms-transition: transform 0.3s ease-in-out;
-	-o-transition: transform 0.3s ease-in-out;
 }
 
 .detail__card {
@@ -213,14 +193,24 @@ body {
 	display: none;
 }
 
+.hidden {
+	height: 0;
+	opacity: 0;
+}
+
 .event__details {
 	display: grid;
-	grid-template-columns: 1fr;
-
-	/*;
+	grid-template-columns: 1fr 1fr;
+	transition: all 0.6s 0.2s;
+	/*:;
 	justify-content: flex-end;
-	justify-content: space-between; */
-	/* align-items: center; */
+	justify-content: space-between;
+	*/
+	-webkit-transition: all 0.6s 0.2s;
+	-moz-transition: all 0.6s 0.2s;
+	-ms-transition: all 0.6s 0.2s;
+	-o-transition: all 0.6s 0.2s;
+	-webkit-transition: all 0.6s 0.2s;
 }
 
 .event__heading {
@@ -250,14 +240,96 @@ body {
 	animation-fill-mode: forwards;
 	-webkit-animation: fadeOut ease 3s;
 }
+
+.detailed__forecast-view {
+	transition: all 1s;
+	-webkit-transition: all 1s;
+	-moz-transition: all 1s;
+	-ms-transition: all 1s;
+	-o-transition: all 1s;
+}
+
+.search {
+	transition: all 0.5s;
+}
+
+.detailed__forecast--cur {
+	border-radius: var(--border-rounded-sm);
+	box-shadow: var(--shadow-light);
+	padding: 2rem 4rem;
+	min-height: var(--minHeight);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	/*transition: all 10s;
+	*/
+	transition: all 0.5s 0.3s;
+	-webkit-border-radius: var(--border-rounded-sm);
+	-moz-border-radius: var(--border-rounded-sm);
+	-ms-border-radius: var(--border-rounded-sm);
+	-o-border-radius: var(--border-rounded-sm);
+}
+
+.detailed__forecast--cur:hover {
+	transition: transform 0.3s ease-in-out;
+	transform: translateY(-0.4rem);
+	box-shadow: var(--shadow-light-hover);
+	-webkit-transform: translateY(-0.4rem);
+	-moz-transform: translateY(-0.4rem);
+	-ms-transform: translateY(-0.4rem);
+	-o-transform: translateY(-0.4rem);
+	-webkit-transition: transform 0.3s ease-in-out;
+	-moz-transition: transform 0.3s ease-in-out;
+	-ms-transition: transform 0.3s ease-in-out;
+	-o-transition: transform 0.3s ease-in-out;
+}
+
+.detailed__forecast--list {
+}
+
+.others {
+	margin-top: 10rem;
+	min-height: var(--minHeight);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.add__cities {
+	background-image: url("/plus-symbol-button.svg");
+	background-repeat: no-repeat;
+	background-size: cover;
+	outline: none;
+	width: 5rem;
+	height: 5rem;
+
+	cursor: pointer;
+	/* box-shadow: var(--shadow-dark); */
+}
+
+.search {
+}
+
+.form {
+	display: flex;
+}
+
+.form__input {
+	width: 100%;
+	padding: 1.2rem;
+}
 /*----------- Fade in ----------------*/
 
 @keyframes fadeIn {
 	from {
 		opacity: 0;
+		visibility: none;
 	}
 	to {
 		opacity: 1;
+		visibility: visible;
 	}
 }
 

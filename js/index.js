@@ -36,13 +36,25 @@ const CurForeCastView = document.querySelector(".cur__Forecast--overview");
 const detailedForeCastViewContainer = document.querySelector(
 	".detailed__forecast-view"
 );
+const detailedForeCastCur = document.querySelector(".detailed__forecast--cur");
+const detailedForeCastList = document.querySelector(
+	".detailed__forecast--list"
+);
 
 const EventView = document.querySelector(".event__view");
+const EventDetails = document.querySelector(".event__details");
 const EventTitle = document.querySelector(".event__title");
 const EventDesc = document.querySelector(".event__desc");
 const EventIcon = document.querySelector(".event__icon");
 
+const searchView = document.querySelector(".search");
+
 const close = document.querySelector(".close");
+const othersContainer = document.querySelector(".others");
+const addCitiesBtn = document.querySelector(".add__cities");
+
+const form = document.querySelector(".form");
+const formInput = document.querySelector(".form__input");
 
 const spinner = `<div class="lds-ripple spinner">
 					<div></div>
@@ -71,6 +83,16 @@ function fetchCurrentForecastData(coords) {
 		.catch(err => console.log(err));
 }
 
+function fetchWeatherForCity(query) {
+	axios
+		.get(
+			`api.openweathermap.org/data/2.5/weather?q=London&appid=983fe9217aa2f17f99c9d6dd7d01dd07`
+		)
+		.then(res => console.log(res))
+		// .then(data => console.log(data))
+		.catch(err => console.log(err));
+}
+
 function renderCurForeCast(data) {
 	const {
 		id,
@@ -87,14 +109,13 @@ function renderCurForeCast(data) {
 	              <h2 class="cur__detail-name">${name},${country}</h2>
 					<div class="cur__detail-icon">
 						<img class="icon" src="./sun.svg" alt="icon"/>
-						<span class="cur__detail-temp">${KelvinToCelcius(temp)} 
-						°C
+						<span class="cur__detail-temp">${KelvinToCelcius(temp)}°C
 						</span>
 					</div>
 					<span class="description cur-description">${main}</span>
-					<span class="cur__maxmin--temp">${KelvinToCelcius(
-						temp_min
-					)}°C.${KelvinToCelcius(temp_max)}°C</span>
+					<span class="maxmin--temp">${KelvinToCelcius(temp_min)}°C.${KelvinToCelcius(
+		temp_max
+	)}°C</span>
 			 
 	`;
 
@@ -108,6 +129,8 @@ function renderCurForeCast(data) {
 }
 
 function getDetailedForecastData(lat, lon, dt, place) {
+	detailedForeCastCur.innerHTML = spinner;
+
 	fetch(
 		`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&dt=${dt}&appid=983fe9217aa2f17f99c9d6dd7d01dd07`
 	)
@@ -117,13 +140,11 @@ function getDetailedForecastData(lat, lon, dt, place) {
 }
 
 function renderDetailedForecastView(data) {
-	console.log(data);
 	const { place, current, daily, hourly } = data;
-
+	EventDetails.classList.remove("hidden");
 	EventTitle.textContent = place;
 	EventIcon.src = setEventIcon(true);
 	let curHtml = `
-			<div class="cur__Forecast--view ">
 				<h2 class="cur__detail-name">Current Weather</h2>
 				<div class="cur__detail-icon">
 					<img class="icon" src="./sun.svg" alt="icon"/>
@@ -133,15 +154,17 @@ function renderDetailedForecastView(data) {
 				<span class="maxmin--temp">${KelvinToCelcius(current.temp)}°C.${KelvinToCelcius(
 		current.temp
 	)}°C</span>
-			</div>`;
+			 `;
 
-	const detailedForecastList = document.createElement("div");
-
-	close.classList.add("fadeIn");
 	close.classList.add("close__icon--show");
 
-	detailedForeCastViewContainer.innerHTML = "";
-	detailedForeCastViewContainer.insertAdjacentHTML("afterbegin", curHtml);
+	if (!data) {
+		throw alert("error occured please refresh");
+	}
+
+	detailedForeCastCur.innerHTML = "";
+
+	detailedForeCastCur.insertAdjacentHTML("afterbegin", curHtml);
 
 	daily.forEach(el => {
 		const {
@@ -150,7 +173,7 @@ function renderDetailedForecastView(data) {
 			weather: [{ main: desc }],
 		} = el;
 
-		let date = new Date();
+		let date = new Date(dt * 1000);
 		let curDate = date.getDate();
 		let curDay = days[date.getDay()];
 		let curMonth = months[date.getMonth()];
@@ -173,9 +196,7 @@ function renderDetailedForecastView(data) {
 						 </div> 
 		            </div>`;
 
-		detailedForeCastViewContainer.appendChild(detailedForecastList);
-
-		detailedForecastList.insertAdjacentHTML("afterbegin", html);
+		detailedForeCastList.insertAdjacentHTML("afterbegin", html);
 	});
 }
 
@@ -185,21 +206,38 @@ CurForeCastView.addEventListener("click", e => {
 	const { date, lat, lon, place } = el.dataset;
 
 	getDetailedForecastData(lat, lon, date, place);
-	CurForeCastView.style.display = "none";
 
-	EventView.classList.remove("hide");
-	detailedForeCastViewContainer.classList.add("fadeIn");
+	othersContainer.style.display = CurForeCastView.style.display = "none";
+	detailedForeCastViewContainer.classList.remove("hidden");
 });
 
 close.addEventListener("click", () => {
-	EventView.classList.add("hide");
-	detailedForeCastViewContainer.classList.remove("fadeIn");
-	// detailedForeCastViewContainer.classList.add(".fadeOut");
+	detailedForeCastViewContainer.classList.add("hidden");
 
-	CurForeCastView.style.display = "flex";
-	close.classList.remove("close__icon--show");
+	detailedForeCastCur.innerHTML = detailedForeCastList.innerHTML = "";
+
+	othersContainer.style.display = CurForeCastView.style.display = "flex";
+	EventDetails.style.display = "none";
+	EventDetails.classList.add("hidden");
+
+	setTimeout(() => {
+		EventDetails.style.display = "grid";
+	}, 1000);
+
 	init();
 });
+
+form.addEventListener("submit", e => {
+	e.preventDefault();
+	fetchWeatherForCity(formInput.value);
+});
+
+function showSearchView() {
+	searchView.style.display = "block";
+	othersContainer.style.display = CurForeCastView.style.display = "none";
+}
+
+addCitiesBtn.addEventListener("click", showSearchView);
 
 function init() {
 	getLocation();
