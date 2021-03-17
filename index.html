@@ -10,42 +10,56 @@
 			rel="stylesheet"
 		/>
 		<link rel="stylesheet" href="css/style.css" />
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js" integrity="sha512-otOZr2EcknK9a5aa3BbMR9XOjYKtxxscwyRHN6zmdXuRfJ5uApkHB7cz1laWk2g8RKLzV9qv/fl3RPwfCuoxHQ==" crossorigin="anonymous"></script>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js"
+			integrity="sha512-otOZr2EcknK9a5aa3BbMR9XOjYKtxxscwyRHN6zmdXuRfJ5uApkHB7cz1laWk2g8RKLzV9qv/fl3RPwfCuoxHQ=="
+			crossorigin="anonymous"
+		></script>
 		<script defer src="js/index.js"></script>
 		<title>Document</title>
 	</head>
 	<body>
 		<main class="content__center">
 			<div class="main">
-				<div class="cur__Forecast--overview"></div>	
+				<div class="cur__Forecast--overview"></div>
 			</div>
 
-			<div class="event__view">
-				<div class="event__details hidden">
-					<div class="event__heading">
-						<h2 class="event__title"></h2>
-						<p class="event__desc"></p>
-						<img class="event__icon"></img>
-					</div>
-					<div class="close"></div>
-				</div>
-
+			<div class="close hidden"></div>
+			<div class="tabs hide">
 				<div class="detailed__forecast-view hidden">
+					<div class="tab__detail fadeIn">
+						<h2 class="tab__title detailedForCastTitle"></h2>
+						<p class="tab__desc"></p>
+						<img src="/pin.svg" class="tab__icon" />
+					</div>
+
 					<div class="detailed__forecast--cur"></div>
 					<div class="detailed__forecast--list"></div>
 				</div>
 				<div class="search hidden">
-					<h1>search cities</h1>
-					<form class="form">
-						<input class="form__input" type="text" placeholder="search citie" />
-						 <button class="form__btn">s</button> 
+					<div class="tab__detail fadeIn">
+						<h2 class="tab__title">type city name here</h2>
+						<p class="tab__desc"></p>
+						<img class="tab__icon" src="/map.svg" />
+					</div>
+					<form class="form fadeIn">
+						<input
+							class="form__input"
+							type="text"
+							placeholder="search cities"
+						/>
+						<div class="input__progress"></div>
 					</form>
+					<div class="search__results"></div>
 				</div>
-			</div> 
-			
+			</div>
+
 			<div class="others">
-              <div class="add__cities">	 
-			  </div>
+				<div class="other__title"><img src="/map.svg" />Other Location</div>
+				<div class="searched__citiesHistory--container"></div>
+				<div class="add__cities">
+					<img src="/plus-symbol-button.svg" class="add__city" />
+				</div>
 			</div>
 		</main>
 	</body>

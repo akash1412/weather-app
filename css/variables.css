@@ -1,0 +1,11 @@
+:root {
+	--shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+	--shadow-hover: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+	--shadow-dark: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+	--border-rounded-sm: 0.5rem;
+	--color-primary: #2b7a78;
+	--color-primary-light: #3aafa9;
+	--color-spinner: #236462;
+	--minHeight: 20rem;
+	--cardTransition: all 0.5s 0.15s;
+}
