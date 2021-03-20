@@ -5,6 +5,7 @@
 	--border-rounded-sm: 0.5rem;
 	--color-primary: #2b7a78;
 	--color-primary-light: #3aafa9;
+	--color-red: rgb(255, 0, 0);
 	--color-spinner: #236462;
 	--minHeight: 20rem;
 	--cardTransition: all 0.5s 0.15s;

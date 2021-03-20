@@ -74,7 +74,14 @@ function getLocation() {
 		success => {
 			fetchCurrentGeoForecastUI(success.coords);
 		},
-		err => console.log(err)
+		err => {
+			console.log(err);
+			renderErrorUI(err.message);
+			CurForeCastView.removeEventListener(
+				"click",
+				GetDetailedForecastOfCurLoaction
+			);
+		}
 	);
 }
 
@@ -144,7 +151,7 @@ function renderListHtml({
 	temp_max,
 	temp_min,
 }) {
-	let html = ` <div class="list__card history__list searched__items shadow-light" data-lat=${lat} data-lon=${lon} data-name=${name} data-temp=${temp} data-temp_min=${temp_min} data-temp_max=${temp_max} data-desc=${desc}>
+	let html = ` <div class="list__card history__list  searched__items shadow-light" data-lat=${lat} data-lon=${lon} data-name=${name} data-temp=${temp} data-temp_min=${temp_min} data-temp_max=${temp_max} data-desc=${desc}>
 	<h2>${name},${country}</h2>
 	 <div class="list__card--specs"> 
 		 <div class="list__specs--left">
@@ -177,13 +184,6 @@ async function setLocalStorage(coords) {
 		weather: [{ main: desc }],
 	} = await fetchCurForcast(coords);
 
-	// searchedCitiesHistoryContainer.innerHTML = "";
-
-	// searchedCitiesHistoryContainer.insertAdjacentHTML(
-	// 	"beforeend",
-	// 	renderListHtml({ name, country, coord, desc, temp, temp_max, temp_min })
-	// );
-
 	const item = { name, country, coord, temp, temp_min, temp_max, desc };
 
 	searchedArray.push(item);
@@ -195,6 +195,11 @@ async function fetchCurrentGeoForecastUI(coords) {
 	const res = await fetchCurForcast(coords);
 
 	renderCurForeCast(res);
+}
+
+function renderErrorUI(errMsg) {
+	console.log(errMsg);
+	CurForeCastView.innerHTML = `<p class='warn'>${errMsg}</p>`;
 }
 
 function renderCurForeCast(data) {
@@ -245,7 +250,7 @@ function renderCurForeCast(data) {
 
 function getDetailedForecastData(lat, lon, curDetail) {
 	detailedForeCastCur.innerHTML = spinner;
-
+	detailedForeCastList.innerHTML = spinner;
 	fetch(
 		`https://proxxy.herokuapp.com/api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=8648a8b8952ada626637f7455c003c32`
 		// `api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&dt=${dt}&appid=983fe9217aa2f17f99c9d6dd7d01dd07`
@@ -281,6 +286,7 @@ function renderDetailedForecastView(data) {
 	}
 
 	detailedForeCastCur.innerHTML = "";
+	detailedForeCastList.innerHTML = "";
 
 	detailedForeCastCur.insertAdjacentHTML("afterbegin", curHtml);
 
@@ -302,7 +308,7 @@ function renderDetailedForecastView(data) {
 			curTime < 12 ? "am" : "pm"
 		}`;
 
-		let html = ` <div class="list__card shadow-light">
+		let html = ` <div class="list__card shadow-light fadeIn">
 		               <span class="list__card--dateAndTime">${curDay},${curDate}, ${curMonth}, ${timeStr} </span>
 		                 <div class="list__card--specs"> 
 						     <div class="list__specs--left">
@@ -323,37 +329,41 @@ function renderDetailedForecastView(data) {
 }
 
 async function displayLoacalStorageItems() {
+	searchedCitiesHistoryContainer.innerHTML = spinner;
 	const searchedArray = JSON.parse(await localStorage.getItem("searchedArray"));
 
 	if (!searchedArray) {
 		return (searchedCitiesHistoryContainer.innerHTML =
-			"you have not searched locations");
+			"<p class='warn' >You have no saved cities. Click the button above to add them!</p>");
 	}
-	searchedCitiesHistoryContainer.innerHTML = "";
-	searchedArray.forEach(el => {
-		searchedCitiesHistoryContainer.insertAdjacentHTML(
-			"beforeend",
-			renderListHtml(el)
-		);
-	});
 
-	document.querySelectorAll(".history__list").forEach(list => {
-		list.addEventListener("click", e => {
-			const el = e.target.closest(".history__list");
-
-			const { lat, lon, ...curDetail } = el.dataset;
-
-			getDetailedForecastData(lat, lon, curDetail);
-			//----------------------------------------------------------
-			othersContainer.style.display = CurForeCastView.style.display = "none";
-			Tabs.classList.remove("hide");
-			close.classList.remove("hidden");
-			detailedForeCastViewContainer.classList.remove("hidden");
+	setInterval(() => {
+		searchedCitiesHistoryContainer.innerHTML = "";
+		searchedArray.forEach(el => {
+			searchedCitiesHistoryContainer.insertAdjacentHTML(
+				"beforeend",
+				renderListHtml(el)
+			);
 		});
-	});
+
+		document.querySelectorAll(".history__list").forEach(list => {
+			list.addEventListener("click", e => {
+				const el = e.target.closest(".history__list");
+
+				const { lat, lon, ...curDetail } = el.dataset;
+
+				getDetailedForecastData(lat, lon, curDetail);
+				//----------------------------------------------------------
+				othersContainer.style.display = CurForeCastView.style.display = "none";
+				Tabs.classList.remove("hide");
+				close.classList.remove("hidden");
+				detailedForeCastViewContainer.classList.remove("hidden");
+			});
+		});
+	}, 700);
 }
 
-CurForeCastView.addEventListener("click", e => {
+function GetDetailedForecastOfCurLoaction(e) {
 	const el = e.target.closest(".cur__Forecast--overview");
 
 	const { date, lat, lon, ...curDetail } = el.dataset;
@@ -362,9 +372,12 @@ CurForeCastView.addEventListener("click", e => {
 
 	othersContainer.style.display = CurForeCastView.style.display = "none";
 	Tabs.classList.remove("hide");
+
 	close.classList.remove("hidden");
 	detailedForeCastViewContainer.classList.remove("hidden");
-});
+}
+
+CurForeCastView.addEventListener("click", GetDetailedForecastOfCurLoaction);
 
 function handleCloseAction() {
 	close.classList.add("hidden");
@@ -413,7 +426,7 @@ addCitiesBtn.addEventListener("click", showSearchView);
 function init() {
 	getLocation();
 	CurForeCastView.innerHTML = spinner;
-	searchedCitiesHistoryContainer.innerHTML = spinner;
+
 	displayLoacalStorageItems();
 }
 

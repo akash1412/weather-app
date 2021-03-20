@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap");
 @import url("spinner.css");
 @import url("variables.css");
 
@@ -20,7 +21,7 @@ body {
 }
 
 .content__center {
-	max-width: 65rem;
+	max-width: 62rem;
 	width: 100%;
 	margin: 0 auto;
 	margin-top: 2rem;
@@ -50,6 +51,11 @@ body {
 	height: 10rem;
 }
 
+.warn {
+	color: red;
+	font-size: 1.6rem;
+}
+
 .close {
 	background-image: url("/close.svg");
 	background-repeat: no-repeat;
@@ -57,18 +63,14 @@ body {
 	width: 2rem;
 	height: 2rem;
 	cursor: pointer;
-	/*animation: fadeIn 0.3s linear 0.7s;
-	-webkit-animation: fadeIn 0.3s linear 0.7s;
-	*/
+	animation: fadeIn 0.3s ease-in 0.5s normal;
 	transition: opacity 0.2s ease-in-out 0.7s;
 	-webkit-transition: opacity 0.2s ease-in-out 0.7s;
 	-moz-transition: opacity 0.2s ease-in-out 0.7s;
 	-ms-transition: opacity 0.2s ease-in-out 0.7s;
 	-o-transition: opacity 0.2s ease-in-out 0.7s;
-}
 
-.close__icon--show {
-	/* display: block; */
+	/* -webkit-animation: fadeIn 0.3s ease-in-out 0.5s normal; */
 }
 
 .temp {
@@ -90,15 +92,12 @@ body {
 	justify-content: center;
 	align-items: center;
 	cursor: pointer;
-	transition: opacity 0.5s ease-in;
+
+	animation: fadeIn 0.3s ease-in-out forwards;
 	-webkit-border-radius: var(--border-rounded-sm);
 	-moz-border-radius: var(--border-rounded-sm);
 	-ms-border-radius: var(--border-rounded-sm);
 	-o-border-radius: var(--border-rounded-sm);
-	-webkit-transition: opacity 0.5s ease-in;
-	-moz-transition: opacity 0.5s ease-in;
-	-ms-transition: opacity 0.5s ease-in;
-	-o-transition: opacity 0.5s ease-in;
 }
 
 .cur__Forecast--overview:hover {
@@ -154,11 +153,8 @@ body {
 	padding: 1.2rem 1rem;
 	border-radius: var(--border-rounded-sm);
 	margin-bottom: 4rem;
-	transition: var(--cardTransition);
-	-webkit-transition: var(--cardTransition);
-	-moz-transition: var(--cardTransition);
-	-ms-transition: var(--cardTransition);
-	-o-transition: var(--cardTransition);
+	/* transition: var(--cardTransition); */
+	animation: fadeIn 0.3s ease-in-out forwards;
 }
 
 .list__card:hover {
@@ -237,11 +233,9 @@ body {
 	justify-content: center;
 	align-items: center;
 	padding: 1.4rem 0 2.5rem 0;
-	transition: opacity 0.3s ease-in-out;
-	-webkit-transition: opacity 0.3s ease-in-out;
-	-moz-transition: opacity 0.3s ease-in-out;
-	-ms-transition: opacity 0.3s ease-in-out;
-	-o-transition: opacity 0.3s ease-in-out;
+	animation: fadeIn 0.5s ease-in-out forwards;
+
+	-webkit-animation: fadeIn 0.5s ease-in-out forwards;
 }
 
 .tab__title {
@@ -255,8 +249,8 @@ body {
 }
 
 .fadeIn {
-	animation: fadeIn 0.3s ease;
-	-webkit-animation: fadeIn 0.3s ease;
+	animation: fadeIn 0.5s ease-in-out forwards;
+	-webkit-animation: fadeIn 0.5s ease-in-out forwards;
 }
 
 .fadeOut {
@@ -455,19 +449,9 @@ body {
 @keyframes fadeIn {
 	from {
 		opacity: 0;
-		/* transform: translateY(-2px); */
-		/* -webkit-transform: translateY(-2px);
-		-moz-transform: translateY(-2px);
-		-ms-transform: translateY(-2px);
-		-o-transform: translateY(-2px); */
 	}
 	to {
 		opacity: 1;
-		/* transform: translateY(0); */
-		/* -webkit-transform: translateY(0);
-		-moz-transform: translateY(0);
-		-ms-transform: translateY(0);
-		-o-transform: translateY(0); */
 	}
 }
 

@@ -4,19 +4,11 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap"
-			rel="stylesheet"
-		/>
+
 		<link rel="stylesheet" href="css/style.css" />
-		<script
-			src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js"
-			integrity="sha512-otOZr2EcknK9a5aa3BbMR9XOjYKtxxscwyRHN6zmdXuRfJ5uApkHB7cz1laWk2g8RKLzV9qv/fl3RPwfCuoxHQ=="
-			crossorigin="anonymous"
-		></script>
+
 		<script defer src="js/index.js"></script>
-		<title>Document</title>
+		<title>weather app</title>
 	</head>
 	<body>
 		<main class="content__center">
@@ -27,7 +19,7 @@
 			<div class="close hidden"></div>
 			<div class="tabs hide">
 				<div class="detailed__forecast-view hidden">
-					<div class="tab__detail fadeIn">
+					<div class="tab__detail">
 						<h2 class="tab__title detailedForCastTitle"></h2>
 						<p class="tab__desc"></p>
 						<img src="/pin.svg" class="tab__icon" />
@@ -37,7 +29,7 @@
 					<div class="detailed__forecast--list"></div>
 				</div>
 				<div class="search hidden">
-					<div class="tab__detail fadeIn">
+					<div class="tab__detail">
 						<h2 class="tab__title">type city name here</h2>
 						<p class="tab__desc"></p>
 						<img class="tab__icon" src="/map.svg" />
