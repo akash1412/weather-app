@@ -82,6 +82,13 @@ body {
 	color: var(--color-primary-light);
 }
 
+.subTitle {
+	text-align: center;
+	margin-top: 4rem;
+	font-size: 1.8rem;
+	color: #889696;
+}
+
 .cur__Forecast--overview {
 	border-radius: var(--border-rounded-sm);
 	box-shadow: var(--shadow);
@@ -146,6 +153,22 @@ body {
 	color: rgb(134, 134, 134);
 	font-size: 1.5rem;
 	margin-top: 0.6rem;
+}
+
+.clear__btn {
+	padding: 0.4rem;
+	outline: none;
+	border: none;
+	color: #fff;
+	background-color: var(--btn-clear);
+	cursor: pointer;
+	border-radius: 0.22rem;
+	margin: 1.4rem;
+}
+
+.clear__btn:hover {
+	transform: translateY(-0.3rem);
+	transition: all 0.3s ease-in-out;
 }
 
 .list__card {
@@ -374,6 +397,7 @@ body {
 }
 
 .search__list {
+	animation: fadeIn 0.3s ease-in-out forwards;
 	align-self: stretch;
 	list-style-type: none;
 	text-align: center;
@@ -392,10 +416,14 @@ body {
 	-moz-border-radius: var(--border-rounded-sm);
 	-ms-border-radius: var(--border-rounded-sm);
 	-o-border-radius: var(--border-rounded-sm);
-	-webkit-transition: opacity 2s ease-in, var(--cardTransition);
+	/* -webkit-transition: opacity 2s ease-in, var(--cardTransition);
 	-moz-transition: opacity 2s ease-in, var(--cardTransition);
 	-ms-transition: opacity 2s ease-in, var(--cardTransition);
-	-o-transition: opacity 2s ease-in, var(--cardTransition);
+	-o-transition: opacity 2s ease-in, var(--cardTransition); */
+}
+
+.history__list {
+	cursor: pointer;
 }
 
 .search__list:hover {

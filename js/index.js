@@ -87,7 +87,6 @@ function getLocation() {
 
 function searchCities(query) {
 	fetch(
-		// `https://cors-anywhere.herokuapp.com/https://get-cities-ids.herokuapp.com/?q=${query}`,
 		`https://proxxy.herokuapp.com/https://get-cities-ids.herokuapp.com/?q=${query}`,
 		{
 			headers: {
@@ -96,16 +95,17 @@ function searchCities(query) {
 		}
 	)
 		.then(res => res.json())
-		.then(cities => renderSearchResults(cities))
+		.then(cities => {
+			console.log(cities);
+			renderSearchResults(cities);
+		})
 		.catch(err => console.log(err));
 }
 
 async function handleListClick(e) {
-	const { lat: latitude, lon: longitude, date, name } = e.target.closest(
-		".search__list"
-	).dataset;
+	const { lat, lon, date, name } = e.target.closest(".search__list").dataset;
 
-	await setLocalStorage({ latitude, longitude });
+	await setLocalStorage(lat, lon);
 	handleCloseAction();
 }
 
@@ -121,8 +121,10 @@ function renderSearchResults(citiesArray) {
 		let citytHtml = `
 	         <li class="search__list" data-lat=${lat} data-lon=${lon} data-name=${name}>
 			    ${name}, ${country}
-			 </li>   
+			 </li>
 	`;
+
+		console.log(lat, lon);
 
 		searchResultsContainer.insertAdjacentHTML("afterbegin", citytHtml);
 	});
@@ -132,9 +134,9 @@ function renderSearchResults(citiesArray) {
 	});
 }
 
-const fetchCurForcast = async coords => {
+const fetchCurForcast = async (lat, lon) => {
 	const response = await fetch(
-		` https://api.openweathermap.org/data/2.5/weather?lat=${coords.latitude}&lon=${coords.longitude}&appid=983fe9217aa2f17f99c9d6dd7d01dd07`
+		` https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=983fe9217aa2f17f99c9d6dd7d01dd07`
 	)
 		.then(res => res.json())
 		.catch(err => console.log(err));
@@ -153,25 +155,25 @@ function renderListHtml({
 }) {
 	let html = ` <div class="list__card history__list  searched__items shadow-light" data-lat=${lat} data-lon=${lon} data-name=${name} data-temp=${temp} data-temp_min=${temp_min} data-temp_max=${temp_max} data-desc=${desc}>
 	<h2>${name},${country}</h2>
-	 <div class="list__card--specs"> 
+	 <div class="list__card--specs">
 		 <div class="list__specs--left">
 			 <img src='/sun.svg' class='list__card--icon' />
 			 <div class="list__descContainer">
 			 <span class="description">${desc}</span>
 			 <span class="maxmin--temp">${KelvinToCelcius(temp_min)}°C.${KelvinToCelcius(
 		temp_max
-	)}°C</span>  
+	)}°C</span>
 			 </div>
 		 </div>
-		 <div class="list__specs--right temp"> 
+		 <div class="list__specs--right temp">
 			 ${KelvinToCelcius(temp)}°C
 		 </div>
-	 </div> 
+	 </div>
   </div>`;
 
 	return html;
 }
-async function setLocalStorage(coords) {
+async function setLocalStorage(lat, lon) {
 	// searchedCitiesHistoryContainer.innerHTML = spinner;
 	let searchedArray =
 		(await JSON.parse(localStorage.getItem("searchedArray"))) || [];
@@ -182,7 +184,7 @@ async function setLocalStorage(coords) {
 		coord,
 		main: { temp, temp_min, temp_max },
 		weather: [{ main: desc }],
-	} = await fetchCurForcast(coords);
+	} = await fetchCurForcast(lat, lon);
 
 	const item = { name, country, coord, temp, temp_min, temp_max, desc };
 
@@ -192,7 +194,7 @@ async function setLocalStorage(coords) {
 }
 
 async function fetchCurrentGeoForecastUI(coords) {
-	const res = await fetchCurForcast(coords);
+	const res = await fetchCurForcast(coords.latitude, coords.longitude);
 
 	renderCurForeCast(res);
 }
@@ -202,7 +204,7 @@ function renderErrorUI(errMsg) {
 	CurForeCastView.innerHTML = `<p class='warn'>${errMsg}</p>`;
 }
 
-function renderCurForeCast(data) {
+function destructHelper(data) {
 	const {
 		id,
 		dt: date,
@@ -213,9 +215,41 @@ function renderCurForeCast(data) {
 		weather: [{ description, main, icon }],
 	} = data;
 
-	let html = ` 
+	// prettier-ignore
+
+	return {
+		id,
+		date,
+		lat,
+		lon,
+		name,
+		country,
+		temp,
+		temp_max,
+		temp_min,
+		main,
+		icon,
+	};
+}
+
+function renderCurForeCast(data) {
+	// prettier-ignore
+	const {
+		id,
+		date,
+		lat,
+		lon,
+		name,
+		temp,
+		temp_max, 
+		temp_min,
+		country,
+		main,
+	} = destructHelper(data);
+
+	let html = `
                 <div class="card__container fadeIn">
-				
+
 	              <h2 class="cur__detail-name">${name},${country}</h2>
 					<div class="cur__detail-icon">
 						<img class="icon" src="./sun.svg" alt="icon"/>
@@ -231,52 +265,45 @@ function renderCurForeCast(data) {
 
 	CurForeCastView.innerHTML = "";
 
-	const vals = [
-		"date",
-		"lat",
-		"lon",
-		"name",
-		"temp",
-		"temp_min",
-		"temp_max",
-		"desc",
-	];
-	[date, lat, lon, name, temp, temp_min, temp_min, main].forEach(
-		(prop, idx) => (CurForeCastView.dataset[vals[idx]] = prop)
-	);
+	CurForeCastView.dataset.lat = lat;
+	CurForeCastView.dataset.lon = lon;
 
 	CurForeCastView.insertAdjacentHTML("afterbegin", html);
 }
 
-function getDetailedForecastData(lat, lon, curDetail) {
+async function getDetailedForecastData(lat, lon) {
 	detailedForeCastCur.innerHTML = spinner;
 	detailedForeCastList.innerHTML = spinner;
-	fetch(
-		`https://proxxy.herokuapp.com/api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=8648a8b8952ada626637f7455c003c32`
-		// `api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&dt=${dt}&appid=983fe9217aa2f17f99c9d6dd7d01dd07`
-		// `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&dt=${dt}&appid=983fe9217aa2f17f99c9d6dd7d01dd07`
+
+	const curForCastData = await fetchCurForcast(lat, lon);
+
+	const dataForNext5days = await fetch(
+		`https://proxxy.herokuapp.com/api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=983fe9217aa2f17f99c9d6dd7d01dd07`
 	)
 		.then(res => res.json())
-		.then(data => {
-			renderDetailedForecastView({ ...data, curDetail });
-		})
 		.catch(err => console.log(err));
+
+	Promise.all([curForCastData, dataForNext5days]).then(res => {
+		renderDetailedForecastView(res);
+	});
 }
 
 function renderDetailedForecastView(data) {
-	const { city, list, curDetail } = data;
+	const [currentData, dataForNext5days] = data;
 
-	detailedForeCastTitle.textContent = city.name;
+	const { temp, temp_max, temp_min, main, name } = destructHelper(currentData);
+
+	detailedForeCastTitle.textContent = name;
 	let curHtml = `
 				<h2 class="cur__detail-name">Current Weather</h2>
 				<div class="cur__detail-icon">
 					<img class="icon" src="./sun.svg" alt="icon"/>
-					<span class="cur__detail-temp">${KelvinToCelcius(curDetail.temp)}°C</span>
+					<span class="cur__detail-temp">${KelvinToCelcius(temp)}°C</span>
 				</div>
-				<p class="description cur-description">${curDetail.desc}</p>
-				<span class="maxmin--temp">${KelvinToCelcius(
-					curDetail.temp_min
-				)}°C.${KelvinToCelcius(curDetail.temp_max)}°C</span>
+				<p class="description cur-description">${main}</p>
+				<span class="maxmin--temp">${KelvinToCelcius(temp_min)}°C.${KelvinToCelcius(
+		temp_max
+	)}°C</span>
 			 `;
 
 	close.classList.add("close__icon--show");
@@ -290,7 +317,12 @@ function renderDetailedForecastView(data) {
 
 	detailedForeCastCur.insertAdjacentHTML("afterbegin", curHtml);
 
-	list.reverse().forEach(el => {
+	detailedForeCastList.insertAdjacentHTML(
+		"beforebegin",
+		"<p class='fadeIn subTitle'>Forecast for Next 5 Days</p>"
+	);
+
+	dataForNext5days.list.reverse().forEach(el => {
 		const {
 			dt_txt,
 			main: { temp, temp_max, temp_min },
@@ -310,18 +342,18 @@ function renderDetailedForecastView(data) {
 
 		let html = ` <div class="list__card shadow-light fadeIn">
 		               <span class="list__card--dateAndTime">${curDay},${curDate}, ${curMonth}, ${timeStr} </span>
-		                 <div class="list__card--specs"> 
+		                 <div class="list__card--specs">
 						     <div class="list__specs--left">
 							   <img src='/sun.svg' class='list__card--icon' />
 							   <div class="list__descContainer">
 							   <span class="description">${desc}</span>
-							   <span class="maxmin--temp">${temp_min}.${temp_max}</span>  
+							   <span class="maxmin--temp">${temp_min}.${temp_max}</span>
 							   </div>
 							 </div>
 						     <div class="list__specs--right temp">
 							   ${temp}°C
 							 </div>
-						 </div> 
+						 </div>
 		            </div>`;
 
 		detailedForeCastList.insertAdjacentHTML("afterbegin", html);
@@ -334,41 +366,55 @@ async function displayLoacalStorageItems() {
 
 	if (!searchedArray) {
 		return (searchedCitiesHistoryContainer.innerHTML =
-			"<p class='warn' >You have no saved cities. Click the button above to add them!</p>");
+			"<p class='warn'>You have no saved cities. Click the button above to add them!</p>");
 	}
 
-	setInterval(() => {
-		searchedCitiesHistoryContainer.innerHTML = "";
-		searchedArray.forEach(el => {
-			searchedCitiesHistoryContainer.insertAdjacentHTML(
-				"beforeend",
-				renderListHtml(el)
-			);
+	// setInterval(() => {
+
+	searchedCitiesHistoryContainer.innerHTML = "";
+	searchedArray.forEach(el => {
+		searchedCitiesHistoryContainer.insertAdjacentHTML(
+			"afterbegin",
+			renderListHtml(el)
+		);
+	});
+
+	document.querySelectorAll(".history__list").forEach(list => {
+		list.addEventListener("click", e => {
+			const el = e.target.closest(".history__list");
+
+			const { lat, lon, ...curDetail } = el.dataset;
+
+			getDetailedForecastData(lat, lon, curDetail);
+			//----------------------------------------------------------
+			othersContainer.style.display = CurForeCastView.style.display = "none";
+			Tabs.classList.remove("hide");
+			close.classList.remove("hidden");
+			detailedForeCastViewContainer.classList.remove("hidden");
 		});
+	});
 
-		document.querySelectorAll(".history__list").forEach(list => {
-			list.addEventListener("click", e => {
-				const el = e.target.closest(".history__list");
+	let clearBtnHtml =
+		"<button class='clear__btn'>clear saved loactions</button>";
+	searchedCitiesHistoryContainer.insertAdjacentHTML("afterend", clearBtnHtml);
 
-				const { lat, lon, ...curDetail } = el.dataset;
+	document
+		.querySelector(".clear__btn")
+		.addEventListener("click", clearLocalStorage);
+	// }, 700);
+}
 
-				getDetailedForecastData(lat, lon, curDetail);
-				//----------------------------------------------------------
-				othersContainer.style.display = CurForeCastView.style.display = "none";
-				Tabs.classList.remove("hide");
-				close.classList.remove("hidden");
-				detailedForeCastViewContainer.classList.remove("hidden");
-			});
-		});
-	}, 700);
+async function clearLocalStorage() {
+	await localStorage.removeItem("searchedArray");
+	displayLoacalStorageItems();
 }
 
 function GetDetailedForecastOfCurLoaction(e) {
 	const el = e.target.closest(".cur__Forecast--overview");
 
-	const { date, lat, lon, ...curDetail } = el.dataset;
+	const { lat, lon } = el.dataset;
 
-	getDetailedForecastData(lat, lon, curDetail);
+	getDetailedForecastData(lat, lon);
 
 	othersContainer.style.display = CurForeCastView.style.display = "none";
 	Tabs.classList.remove("hide");
@@ -379,14 +425,23 @@ function GetDetailedForecastOfCurLoaction(e) {
 
 CurForeCastView.addEventListener("click", GetDetailedForecastOfCurLoaction);
 
+function clearTabView() {
+	detailedForeCastViewContainer.classList.add("hidden");
+	detailedForeCastList.innerHTML = "";
+
+	detailedForeCastTitle.textContent = "";
+	// ------ search view ------------------//
+	searchedCitiesHistoryContainer.innerHTML = "";
+}
+
 function handleCloseAction() {
 	close.classList.add("hidden");
 	Tabs.classList.add("hide");
-	detailedForeCastViewContainer.classList.add("hidden");
-	detailedForeCastList.innerHTML = "";
+
+	clearTabView();
+
 	detailedForeCastCur.style.display = "none";
-	searchedCitiesHistoryContainer.innerHTML = "";
-	detailedForeCastTitle.textContent = "";
+
 	setTimeout(() => {
 		detailedForeCastCur.style.display = "flex";
 		searchResultsContainer.innerHTML = "";
@@ -404,6 +459,7 @@ form.addEventListener("submit", e => {
 	e.preventDefault();
 	searchResultsContainer.innerHTML = spinner;
 	searchCities(formInput.value);
+	formInput.value = "";
 });
 
 function showSearchView() {
