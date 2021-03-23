@@ -62,6 +62,8 @@ const addCitiesBtn = document.querySelector(".add__cities");
 const form = document.querySelector(".form");
 const formInput = document.querySelector(".form__input");
 
+const clearSavedLocationsBtn = document.querySelector(".clear__btn");
+
 const spinner = `<div class="spinner">
 					<div></div>
 					<div></div>
@@ -103,7 +105,7 @@ function searchCities(query) {
 }
 
 async function handleListClick(e) {
-	const { lat, lon, date, name } = e.target.closest(".search__list").dataset;
+	const { lat, lon } = e.target.closest(".search__list").dataset;
 
 	await setLocalStorage(lat, lon);
 	handleCloseAction();
@@ -152,12 +154,13 @@ function renderListHtml({
 	temp,
 	temp_max,
 	temp_min,
+	icon,
 }) {
 	let html = ` <div class="list__card history__list  searched__items shadow-light" data-lat=${lat} data-lon=${lon} data-name=${name} data-temp=${temp} data-temp_min=${temp_min} data-temp_max=${temp_max} data-desc=${desc}>
 	<h2>${name},${country}</h2>
 	 <div class="list__card--specs">
 		 <div class="list__specs--left">
-			 <img src='/sun.svg' class='list__card--icon' />
+			 <img src='../images/weather/${icon}.svg' class='list__card--icon' alt='weather_icon' />
 			 <div class="list__descContainer">
 			 <span class="description">${desc}</span>
 			 <span class="maxmin--temp">${KelvinToCelcius(temp_min)}°C.${KelvinToCelcius(
@@ -183,10 +186,10 @@ async function setLocalStorage(lat, lon) {
 		sys: { country },
 		coord,
 		main: { temp, temp_min, temp_max },
-		weather: [{ main: desc }],
+		weather: [{ main: desc, icon }],
 	} = await fetchCurForcast(lat, lon);
 
-	const item = { name, country, coord, temp, temp_min, temp_max, desc };
+	const item = { name, country, coord, temp, temp_min, temp_max, desc, icon };
 
 	searchedArray.push(item);
 
@@ -245,14 +248,17 @@ function renderCurForeCast(data) {
 		temp_min,
 		country,
 		main,
+		icon
 	} = destructHelper(data);
+
+	console.log(icon);
 
 	let html = `
                 <div class="card__container fadeIn">
 
 	              <h2 class="cur__detail-name">${name},${country}</h2>
 					<div class="cur__detail-icon">
-						<img class="icon" src="./sun.svg" alt="icon"/>
+						<img class="icon" src='../images/weather/${icon}.svg' alt="weather_icon"/>
 						<span class="cur__detail-temp">${KelvinToCelcius(temp)}°C
 						</span>
 					</div>
@@ -291,13 +297,16 @@ async function getDetailedForecastData(lat, lon) {
 function renderDetailedForecastView(data) {
 	const [currentData, dataForNext5days] = data;
 
-	const { temp, temp_max, temp_min, main, name } = destructHelper(currentData);
+	const { temp, temp_max, temp_min, main, name, icon } = destructHelper(
+		currentData
+	);
 
 	detailedForeCastTitle.textContent = name;
+
 	let curHtml = `
 				<h2 class="cur__detail-name">Current Weather</h2>
 				<div class="cur__detail-icon">
-					<img class="icon" src="./sun.svg" alt="icon"/>
+					<img class="icon" src='../images/weather/${icon}.svg' alt="weather_icon"/>
 					<span class="cur__detail-temp">${KelvinToCelcius(temp)}°C</span>
 				</div>
 				<p class="description cur-description">${main}</p>
@@ -317,34 +326,32 @@ function renderDetailedForecastView(data) {
 
 	detailedForeCastCur.insertAdjacentHTML("afterbegin", curHtml);
 
-	detailedForeCastList.insertAdjacentHTML(
-		"beforebegin",
-		"<p class='fadeIn subTitle'>Forecast for Next 5 Days</p>"
-	);
+	dataForNext5days.list
+		.filter(d => new Date(d.dt_txt) > new Date())
+		.reverse()
+		.forEach(el => {
+			const {
+				dt_txt,
+				main: { temp, temp_max, temp_min },
 
-	dataForNext5days.list.reverse().forEach(el => {
-		const {
-			dt_txt,
-			main: { temp, temp_max, temp_min },
+				weather: [{ main: desc, icon }],
+			} = el;
 
-			weather: [{ main: desc }],
-		} = el;
+			let date = new Date(dt_txt);
+			let curDate = date.getDate();
+			let curDay = days[date.getDay()];
+			let curMonth = months[date.getMonth()];
+			let curTime = date.getHours();
 
-		let date = new Date(dt_txt);
-		let curDate = date.getDate();
-		let curDay = days[date.getDay()];
-		let curMonth = months[date.getMonth()];
-		let curTime = date.getHours();
+			let timeStr = `${String(curTime).padEnd(00)}:00 ${
+				curTime < 12 ? "am" : "pm"
+			}`;
 
-		let timeStr = `${String(curTime).padEnd(00)}:00 ${
-			curTime < 12 ? "am" : "pm"
-		}`;
-
-		let html = ` <div class="list__card shadow-light fadeIn">
+			let html = ` <div class="list__card shadow-light fadeIn">
 		               <span class="list__card--dateAndTime">${curDay},${curDate}, ${curMonth}, ${timeStr} </span>
 		                 <div class="list__card--specs">
 						     <div class="list__specs--left">
-							   <img src='/sun.svg' class='list__card--icon' />
+							   <img src='../images/weather/${icon}.svg' class='list__card--icon' alt='weather_icon' />
 							   <div class="list__descContainer">
 							   <span class="description">${desc}</span>
 							   <span class="maxmin--temp">${temp_min}.${temp_max}</span>
@@ -356,8 +363,8 @@ function renderDetailedForecastView(data) {
 						 </div>
 		            </div>`;
 
-		detailedForeCastList.insertAdjacentHTML("afterbegin", html);
-	});
+			detailedForeCastList.insertAdjacentHTML("afterbegin", html);
+		});
 }
 
 async function displayLoacalStorageItems() {
@@ -369,45 +376,39 @@ async function displayLoacalStorageItems() {
 			"<p class='warn'>You have no saved cities. Click the button above to add them!</p>");
 	}
 
-	// setInterval(() => {
-
-	searchedCitiesHistoryContainer.innerHTML = "";
-	searchedArray.forEach(el => {
-		searchedCitiesHistoryContainer.insertAdjacentHTML(
-			"afterbegin",
-			renderListHtml(el)
-		);
-	});
-
-	document.querySelectorAll(".history__list").forEach(list => {
-		list.addEventListener("click", e => {
-			const el = e.target.closest(".history__list");
-
-			const { lat, lon, ...curDetail } = el.dataset;
-
-			getDetailedForecastData(lat, lon, curDetail);
-			//----------------------------------------------------------
-			othersContainer.style.display = CurForeCastView.style.display = "none";
-			Tabs.classList.remove("hide");
-			close.classList.remove("hidden");
-			detailedForeCastViewContainer.classList.remove("hidden");
+	setTimeout(() => {
+		searchedCitiesHistoryContainer.innerHTML = "";
+		searchedArray.forEach(el => {
+			console.log(el);
+			searchedCitiesHistoryContainer.insertAdjacentHTML(
+				"afterbegin",
+				renderListHtml(el)
+			);
 		});
-	});
 
-	let clearBtnHtml =
-		"<button class='clear__btn'>clear saved loactions</button>";
-	searchedCitiesHistoryContainer.insertAdjacentHTML("afterend", clearBtnHtml);
+		document.querySelectorAll(".history__list").forEach(list => {
+			list.addEventListener("click", e => {
+				const el = e.target.closest(".history__list");
 
-	document
-		.querySelector(".clear__btn")
-		.addEventListener("click", clearLocalStorage);
-	// }, 700);
+				const { lat, lon, ...curDetail } = el.dataset;
+
+				getDetailedForecastData(lat, lon, curDetail);
+				//----------------------------------------------------------
+				othersContainer.style.display = CurForeCastView.style.display = "none";
+				Tabs.classList.remove("hide");
+				close.classList.remove("hidden");
+				detailedForeCastViewContainer.classList.remove("hidden");
+			});
+		});
+	}, 700);
 }
 
 async function clearLocalStorage() {
 	await localStorage.removeItem("searchedArray");
 	displayLoacalStorageItems();
 }
+
+clearSavedLocationsBtn.addEventListener("click", clearLocalStorage);
 
 function GetDetailedForecastOfCurLoaction(e) {
 	const el = e.target.closest(".cur__Forecast--overview");
@@ -482,7 +483,6 @@ addCitiesBtn.addEventListener("click", showSearchView);
 function init() {
 	getLocation();
 	CurForeCastView.innerHTML = spinner;
-
 	displayLoacalStorageItems();
 }
 

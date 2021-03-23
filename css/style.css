@@ -101,6 +101,7 @@ body {
 	cursor: pointer;
 
 	animation: fadeIn 0.3s ease-in-out forwards;
+	transition: all 0.3s ease-in-out;
 	-webkit-border-radius: var(--border-rounded-sm);
 	-moz-border-radius: var(--border-rounded-sm);
 	-ms-border-radius: var(--border-rounded-sm);
@@ -108,17 +109,12 @@ body {
 }
 
 .cur__Forecast--overview:hover {
-	transition: transform 0.3s ease-in-out;
 	transform: translateY(-0.15rem);
 	box-shadow: var(--shadow-hover);
 	-webkit-transform: translateY(-0.15rem);
 	-moz-transform: translateY(-0.15rem);
 	-ms-transform: translateY(-0.15rem);
 	-o-transform: translateY(-0.15rem);
-	-webkit-transition: transform 0.3s ease-in-out;
-	-moz-transition: transform 0.3s ease-in-out;
-	-ms-transition: transform 0.3s ease-in-out;
-	-o-transition: transform 0.3s ease-in-out;
 }
 
 .card__container {
@@ -164,11 +160,12 @@ body {
 	cursor: pointer;
 	border-radius: 0.22rem;
 	margin: 1.4rem;
+	transition: all 0.3s ease-in-out;
 }
 
 .clear__btn:hover {
-	transform: translateY(-0.3rem);
-	transition: all 0.3s ease-in-out;
+	/* transition: transform 0.3s ease-in-out; */
+	transform: translateY(-0.4rem);
 }
 
 .list__card {
@@ -178,20 +175,16 @@ body {
 	margin-bottom: 4rem;
 	/* transition: var(--cardTransition); */
 	animation: fadeIn 0.3s ease-in-out forwards;
+	transition: all 0.3s ease-in-out;
 }
 
 .list__card:hover {
-	transition: transform 0.3s ease-in-out;
 	transform: translateY(-0.15rem);
 	box-shadow: var(--shadow-hover);
 	-webkit-transform: translateY(-0.15rem);
 	-moz-transform: translateY(-0.15rem);
 	-ms-transform: translateY(-0.15rem);
 	-o-transform: translateY(-0.15rem);
-	-webkit-transition: transform 0.3s ease-in-out;
-	-moz-transition: transform 0.3s ease-in-out;
-	-ms-transition: transform 0.3s ease-in-out;
-	-o-transition: transform 0.3s ease-in-out;
 }
 
 .list__card > h2 {
@@ -335,8 +328,14 @@ body {
 }
 
 .detailed__forecast--list {
+	display: flex;
+	flex-direction: column;
 	margin-top: 5rem;
 	padding: 0 3rem;
+}
+
+.detailed__forecast--list .spinner {
+	align-self: center;
 }
 
 .others {
