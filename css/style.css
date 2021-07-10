@@ -65,7 +65,7 @@ body {
 }
 
 .close {
-	background-image: url('/close.svg');
+	background-image: url('/svg/close.svg');
 	background-repeat: no-repeat;
 	background-size: cover;
 	width: 2rem;
