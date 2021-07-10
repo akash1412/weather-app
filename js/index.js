@@ -1,28 +1,28 @@
-const API_KEY = "381d904bb5f8891c68c8a3c817e855ce";
+const API_KEY = '381d904bb5f8891c68c8a3c817e855ce';
 
 const days = [
-	"Monday",
-	"Tuesday",
-	"Wednesday",
-	"Thursday",
-	"Friday",
-	"Saturday",
-	"Sunday",
+	'Monday',
+	'Tuesday',
+	'Wednesday',
+	'Thursday',
+	'Friday',
+	'Saturday',
+	'Sunday',
 ];
 
 const months = [
-	"January",
-	"February",
-	"March",
-	"April",
-	"May",
-	"June",
-	"July",
-	"August",
-	"September",
-	"October",
-	"November",
-	"December",
+	'January',
+	'February',
+	'March',
+	'April',
+	'May',
+	'June',
+	'July',
+	'August',
+	'September',
+	'October',
+	'November',
+	'December',
 ];
 // use class to build the app
 // getLocation()
@@ -31,38 +31,38 @@ const months = [
 
 const KelvinToCelcius = tempInKelv => (tempInKelv - 273).toFixed(1);
 
-const MainContent = document.querySelector(".content__center");
-const MainView = document.querySelector(".main");
-const CurForeCastView = document.querySelector(".cur__Forecast--overview");
+const MainContent = document.querySelector('.content__center');
+const MainView = document.querySelector('.main');
+const CurForeCastView = document.querySelector('.cur__Forecast--overview');
 const detailedForeCastViewContainer = document.querySelector(
-	".detailed__forecast-view"
+	'.detailed__forecast-view'
 );
-const detailedForeCastCur = document.querySelector(".detailed__forecast--cur");
+const detailedForeCastCur = document.querySelector('.detailed__forecast--cur');
 const detailedForeCastList = document.querySelector(
-	".detailed__forecast--list"
+	'.detailed__forecast--list'
 );
-const detailedForeCastTitle = document.querySelector(".detailedForCastTitle");
+const detailedForeCastTitle = document.querySelector('.detailedForCastTitle');
 
-const Tabs = document.querySelector(".tabs");
-const EventDetails = document.querySelector(".event__details");
-const EventTitle = document.querySelector(".event__title");
-const EventDesc = document.querySelector(".event__desc");
-const EventIcon = document.querySelector(".event__icon");
+const Tabs = document.querySelector('.tabs');
+const EventDetails = document.querySelector('.event__details');
+const EventTitle = document.querySelector('.event__title');
+const EventDesc = document.querySelector('.event__desc');
+const EventIcon = document.querySelector('.event__icon');
 
-const searchView = document.querySelector(".search");
-const searchResultsContainer = document.querySelector(".search__results");
+const searchView = document.querySelector('.search');
+const searchResultsContainer = document.querySelector('.search__results');
 
-const close = document.querySelector(".close");
-const othersContainer = document.querySelector(".others");
+const close = document.querySelector('.close');
+const othersContainer = document.querySelector('.others');
 const searchedCitiesHistoryContainer = document.querySelector(
-	".searched__citiesHistory--container"
+	'.searched__citiesHistory--container'
 );
-const addCitiesBtn = document.querySelector(".add__cities");
+const addCitiesBtn = document.querySelector('.add__cities');
 
-const form = document.querySelector(".form");
-const formInput = document.querySelector(".form__input");
+const form = document.querySelector('.form');
+const formInput = document.querySelector('.form__input');
 
-const clearSavedLocationsBtn = document.querySelector(".clear__btn");
+const clearSavedLocationsBtn = document.querySelector('.clear__btn');
 
 const spinner = `<div class="spinner">
 					<div></div>
@@ -71,7 +71,7 @@ const spinner = `<div class="spinner">
 `;
 
 function getLocation() {
-	if (!navigator.geolocation) alert("geolocation not available");
+	if (!navigator.geolocation) alert('geolocation not available');
 	navigator.geolocation.getCurrentPosition(
 		success => {
 			fetchCurrentGeoForecastUI(success.coords);
@@ -80,7 +80,7 @@ function getLocation() {
 			console.log(err);
 			renderErrorUI(err.message);
 			CurForeCastView.removeEventListener(
-				"click",
+				'click',
 				GetDetailedForecastOfCurLoaction
 			);
 		}
@@ -92,7 +92,7 @@ function searchCities(query) {
 		`https://proxxy.herokuapp.com/https://get-cities-ids.herokuapp.com/?q=${query}`,
 		{
 			headers: {
-				"Content-Type": "application/json",
+				'Content-Type': 'application/json',
 			},
 		}
 	)
@@ -105,14 +105,14 @@ function searchCities(query) {
 }
 
 async function handleListClick(e) {
-	const { lat, lon } = e.target.closest(".search__list").dataset;
+	const { lat, lon } = e.target.closest('.search__list').dataset;
 
 	await setLocalStorage(lat, lon);
 	handleCloseAction();
 }
 
 function renderSearchResults(citiesArray) {
-	searchResultsContainer.innerHTML = "";
+	searchResultsContainer.innerHTML = '';
 
 	citiesArray.forEach(city => {
 		const {
@@ -128,11 +128,11 @@ function renderSearchResults(citiesArray) {
 
 		console.log(lat, lon);
 
-		searchResultsContainer.insertAdjacentHTML("afterbegin", citytHtml);
+		searchResultsContainer.insertAdjacentHTML('afterbegin', citytHtml);
 	});
 
-	document.querySelectorAll(".search__list").forEach(e => {
-		e.addEventListener("click", handleListClick);
+	document.querySelectorAll('.search__list').forEach(e => {
+		e.addEventListener('click', handleListClick);
 	});
 }
 
@@ -179,7 +179,7 @@ function renderListHtml({
 async function setLocalStorage(lat, lon) {
 	// searchedCitiesHistoryContainer.innerHTML = spinner;
 	let searchedArray =
-		(await JSON.parse(localStorage.getItem("searchedArray"))) || [];
+		(await JSON.parse(localStorage.getItem('searchedArray'))) || [];
 
 	const {
 		name,
@@ -193,7 +193,7 @@ async function setLocalStorage(lat, lon) {
 
 	searchedArray.push(item);
 
-	await localStorage.setItem("searchedArray", JSON.stringify(searchedArray));
+	await localStorage.setItem('searchedArray', JSON.stringify(searchedArray));
 }
 
 async function fetchCurrentGeoForecastUI(coords) {
@@ -251,8 +251,6 @@ function renderCurForeCast(data) {
 		icon
 	} = destructHelper(data);
 
-	console.log(icon);
-
 	let html = `
                 <div class="card__container fadeIn">
 
@@ -269,12 +267,12 @@ function renderCurForeCast(data) {
 	</div>
 	`;
 
-	CurForeCastView.innerHTML = "";
+	CurForeCastView.innerHTML = '';
 
 	CurForeCastView.dataset.lat = lat;
 	CurForeCastView.dataset.lon = lon;
 
-	CurForeCastView.insertAdjacentHTML("afterbegin", html);
+	CurForeCastView.insertAdjacentHTML('afterbegin', html);
 }
 
 async function getDetailedForecastData(lat, lon) {
@@ -297,14 +295,13 @@ async function getDetailedForecastData(lat, lon) {
 function renderDetailedForecastView(data) {
 	const [currentData, dataForNext5days] = data;
 
-	const { temp, temp_max, temp_min, main, name, icon } = destructHelper(
-		currentData
-	);
+	const { temp, temp_max, temp_min, main, name, icon } =
+		destructHelper(currentData);
 
-	detailedForeCastTitle.textContent = name;
+	detailedForeCastTitle.textContent = `${name} 🏠`;
 
 	let curHtml = `
-				<h2 class="cur__detail-name">Current Weather</h2>
+				<h2 class="cur__detail-name">Current Weather </h2>
 				<div class="cur__detail-icon">
 					<img class="icon" src='../images/weather/${icon}.svg' alt="weather_icon"/>
 					<span class="cur__detail-temp">${KelvinToCelcius(temp)}°C</span>
@@ -315,16 +312,16 @@ function renderDetailedForecastView(data) {
 	)}°C</span>
 			 `;
 
-	close.classList.add("close__icon--show");
+	close.classList.add('close__icon--show');
 
 	if (!data) {
-		throw alert("error occured please refresh");
+		throw alert('error occured please refresh');
 	}
 
-	detailedForeCastCur.innerHTML = "";
-	detailedForeCastList.innerHTML = "";
+	detailedForeCastCur.innerHTML = '';
+	detailedForeCastList.innerHTML = '';
 
-	detailedForeCastCur.insertAdjacentHTML("afterbegin", curHtml);
+	detailedForeCastCur.insertAdjacentHTML('afterbegin', curHtml);
 
 	dataForNext5days.list
 		.filter(d => new Date(d.dt_txt) > new Date())
@@ -344,11 +341,11 @@ function renderDetailedForecastView(data) {
 			let curTime = date.getHours();
 
 			let timeStr = `${String(curTime).padEnd(00)}:00 ${
-				curTime < 12 ? "am" : "pm"
+				curTime < 12 ? 'am' : 'pm'
 			}`;
 
 			let html = ` <div class="list__card shadow-light fadeIn">
-		               <span class="list__card--dateAndTime">${curDay},${curDate}, ${curMonth}, ${timeStr} </span>
+		               <h1 class="list__card--dateAndTime">${curDay},${curDate}, ${curMonth}, ${timeStr} </h1>
 		                 <div class="list__card--specs">
 						     <div class="list__specs--left">
 							   <img src='../images/weather/${icon}.svg' class='list__card--icon' alt='weather_icon' />
@@ -363,13 +360,13 @@ function renderDetailedForecastView(data) {
 						 </div>
 		            </div>`;
 
-			detailedForeCastList.insertAdjacentHTML("afterbegin", html);
+			detailedForeCastList.insertAdjacentHTML('afterbegin', html);
 		});
 }
 
 async function displayLoacalStorageItems() {
 	searchedCitiesHistoryContainer.innerHTML = spinner;
-	const searchedArray = JSON.parse(await localStorage.getItem("searchedArray"));
+	const searchedArray = JSON.parse(await localStorage.getItem('searchedArray'));
 
 	if (!searchedArray) {
 		return (searchedCitiesHistoryContainer.innerHTML =
@@ -377,108 +374,108 @@ async function displayLoacalStorageItems() {
 	}
 
 	setTimeout(() => {
-		searchedCitiesHistoryContainer.innerHTML = "";
+		searchedCitiesHistoryContainer.innerHTML = '';
 		searchedArray.forEach(el => {
 			console.log(el);
 			searchedCitiesHistoryContainer.insertAdjacentHTML(
-				"afterbegin",
+				'afterbegin',
 				renderListHtml(el)
 			);
 		});
 
-		document.querySelectorAll(".history__list").forEach(list => {
-			list.addEventListener("click", e => {
-				const el = e.target.closest(".history__list");
+		document.querySelectorAll('.history__list').forEach(list => {
+			list.addEventListener('click', e => {
+				const el = e.target.closest('.history__list');
 
 				const { lat, lon, ...curDetail } = el.dataset;
 
 				getDetailedForecastData(lat, lon, curDetail);
 				//----------------------------------------------------------
-				othersContainer.style.display = CurForeCastView.style.display = "none";
-				Tabs.classList.remove("hide");
-				close.classList.remove("hidden");
-				detailedForeCastViewContainer.classList.remove("hidden");
+				othersContainer.style.display = CurForeCastView.style.display = 'none';
+				Tabs.classList.remove('hide');
+				close.classList.remove('hidden');
+				detailedForeCastViewContainer.classList.remove('hidden');
 			});
 		});
 	}, 700);
 }
 
 async function clearLocalStorage() {
-	await localStorage.removeItem("searchedArray");
+	await localStorage.removeItem('searchedArray');
 	displayLoacalStorageItems();
 }
 
-clearSavedLocationsBtn.addEventListener("click", clearLocalStorage);
+clearSavedLocationsBtn.addEventListener('click', clearLocalStorage);
 
 function GetDetailedForecastOfCurLoaction(e) {
-	const el = e.target.closest(".cur__Forecast--overview");
+	const el = e.target.closest('.cur__Forecast--overview');
 
 	const { lat, lon } = el.dataset;
 
 	getDetailedForecastData(lat, lon);
 
-	othersContainer.style.display = CurForeCastView.style.display = "none";
-	Tabs.classList.remove("hide");
+	othersContainer.style.display = CurForeCastView.style.display = 'none';
+	Tabs.classList.remove('hide');
 
-	close.classList.remove("hidden");
-	detailedForeCastViewContainer.classList.remove("hidden");
+	close.classList.remove('hidden');
+	detailedForeCastViewContainer.classList.remove('hidden');
 }
 
-CurForeCastView.addEventListener("click", GetDetailedForecastOfCurLoaction);
+CurForeCastView.addEventListener('click', GetDetailedForecastOfCurLoaction);
 
 function clearTabView() {
-	detailedForeCastViewContainer.classList.add("hidden");
-	detailedForeCastList.innerHTML = "";
+	detailedForeCastViewContainer.classList.add('hidden');
+	detailedForeCastList.innerHTML = '';
 
-	detailedForeCastTitle.textContent = "";
+	detailedForeCastTitle.textContent = '';
 	// ------ search view ------------------//
-	searchedCitiesHistoryContainer.innerHTML = "";
+	searchedCitiesHistoryContainer.innerHTML = '';
 }
 
 function handleCloseAction() {
-	close.classList.add("hidden");
-	Tabs.classList.add("hide");
+	close.classList.add('hidden');
+	Tabs.classList.add('hide');
 
 	clearTabView();
 
-	detailedForeCastCur.style.display = "none";
+	detailedForeCastCur.style.display = 'none';
 
 	setTimeout(() => {
-		detailedForeCastCur.style.display = "flex";
-		searchResultsContainer.innerHTML = "";
+		detailedForeCastCur.style.display = 'flex';
+		searchResultsContainer.innerHTML = '';
 	}, 1000);
 
-	searchView.classList.add("hidden");
+	searchView.classList.add('hidden');
 
-	othersContainer.style.display = CurForeCastView.style.display = "flex";
+	othersContainer.style.display = CurForeCastView.style.display = 'flex';
 	init();
 }
 
-close.addEventListener("click", handleCloseAction);
+close.addEventListener('click', handleCloseAction);
 
-form.addEventListener("submit", e => {
+form.addEventListener('submit', e => {
 	e.preventDefault();
 	searchResultsContainer.innerHTML = spinner;
 	searchCities(formInput.value);
-	formInput.value = "";
+	formInput.value = '';
 });
 
 function showSearchView() {
-	Tabs.classList.remove("hide");
-	detailedForeCastCur.style.display = "none";
+	Tabs.classList.remove('hide');
+	detailedForeCastCur.style.display = 'none';
 
-	searchView.classList.remove("hidden");
+	searchView.classList.remove('hidden');
 
-	close.classList.remove("hidden");
+	close.classList.remove('hidden');
 
-	othersContainer.style.display = CurForeCastView.style.display = "none";
+	othersContainer.style.display = CurForeCastView.style.display = 'none';
 	//--------------------------------------------------------///
-	document.querySelectorAll(".search__list").forEach(e => {
-		e.addEventListener("click", handleListClick);
+	document.querySelectorAll('.search__list').forEach(e => {
+		e.addEventListener('click', handleListClick);
 	});
 }
 
-addCitiesBtn.addEventListener("click", showSearchView);
+addCitiesBtn.addEventListener('click', showSearchView);
 
 function init() {
 	getLocation();
